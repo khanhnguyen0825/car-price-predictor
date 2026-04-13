@@ -241,26 +241,33 @@ class CarPriceDataLoader:
         return self.df
     
     def clean_numeric_features(self):
-        """Clean numeric features (Year, Kilometers, Seats)"""
+        """
+        BƯỚC 5: Làm sạch các thuộc tính số (Năm SX, Số KM, Số chỗ ngồi)
+        
+        Mục tiêu: Chuyển dữ liệu từ dạng chữ về dạng số thực và loại bỏ các giá trị phi lý.
+        """
         if self.df is None:
             raise ValueError("Data not loaded. Call load_data() first.")
         
-        print("\n[CLEAN] Đang làm sạch các thuộc tính số (Năm SX, Kilômét, Số chỗ ngồi)...")
+        print("\n[CLEAN] Đang làm sạch các thuộc tính số (Năm SX, Số KM, Số chỗ ngồi)...")
         
-        # Clean Year
+        # ── Xử lý Năm Sản Xuất ──────────────────────────────
         if 'Year' in self.df.columns:
+            # Chuyển về dạng số, nếu lỗi (ví dụ chữ) thì biến thành NaN (Not a Number)
             self.df['Year'] = pd.to_numeric(self.df['Year'], errors='coerce')
+            # Chỉ giữ xe trong khoảng năm cho phép (vd: 1980 - 2026) định nghĩa trong config.py
             self.df = self.df[(self.df['Year'] >= config.MIN_YEAR) & (self.df['Year'] <= config.MAX_YEAR)]
             print(f"[INFO] Khoảng năm: {self.df['Year'].min():.0f} - {self.df['Year'].max():.0f}")
         
-        # Clean Kilometers
+        # ── Xử lý Số KM đã đi ──────────────────────────────
         if 'Kilometers' in self.df.columns:
             def parse_km(km_str):
+                """Hàm phụ: bóc tách số từ chuỗi KM (vd: '38.000 km' -> 38000)"""
                 if pd.isna(km_str) or km_str == '':
                     return np.nan
-                # Convert to string and lowercase for consistent parsing
+                
+                # Chuyển về chữ thường và xóa các ký tự gây nhiễu
                 km_str = str(km_str).lower()
-                # Remove commas, dots, spaces, and 'km' suffix
                 km_str = km_str.replace(',', '').replace('.', '').replace(' ', '').replace('km', '').strip()
                 try:
                     value = float(km_str)
@@ -270,50 +277,57 @@ class CarPriceDataLoader:
             
             self.df['Kilometers'] = self.df['Kilometers'].apply(parse_km)
             
-            # Only filter if we have valid KM data
+            # Chỉ lọc theo KM nếu có đủ lượng dữ liệu hợp lệ (tránh mất sạch dữ liệu)
             valid_km = self.df['Kilometers'].notna().sum()
-            if valid_km > 100:  # Need at least 100 valid records
+            if valid_km > 100:
+                # Chỉ lấy xe đi dưới mức KM tối đa trong config (vd: 500k KM)
                 self.df = self.df[(self.df['Kilometers'] >= 0) & (self.df['Kilometers'] <= config.MAX_KM)]
                 print(f"[INFO] Khoảng KM: {self.df['Kilometers'].min():.0f} - {self.df['Kilometers'].max():.0f}")
                 print(f"[INFO] Số bản ghi KM hợp lệ: {valid_km}/{len(self.df)}")
             else:
-                print(f"[WARNING] Dữ liệu KM không khả dụng - chỉ có {valid_km} bản ghi hợp lệ")
-                # Fill with median for age calculation
+                print(f"[WARNING] Dữ liệu KM bị lỗi quá nhiều - tạm thời lấy giá trị trung bình (50k KM)")
+                # Nếu dữ liệu KM quá ít, ta điền tạm 50k KM để các thuật toán không bị lỗi
                 self.df['Kilometers'] = self.df['Kilometers'].fillna(50000)
         
-        # Clean Seats (OPTIONAL - may not exist or be empty)
+        # ── Xử lý Số ghế (Seats) ────────────────────────────
         if 'Seats' in self.df.columns:
             self.df['Seats'] = pd.to_numeric(self.df['Seats'], errors='coerce')
-            # Only filter if we have valid seats data
             valid_seats = self.df['Seats'].notna().sum()
             if valid_seats > 100:
+                # Giới hạn số chỗ từ 2 đến 16 chỗ (phổ biến)
                 self.df = self.df[(self.df['Seats'] >= 2) & (self.df['Seats'] <= 16)]
                 print(f"[INFO] Khoảng số chỗ: {self.df['Seats'].min():.0f} - {self.df['Seats'].max():.0f}")
             else:
-                print(f"[WARNING] Dữ liệu số chỗ không khả dụng ({valid_seats} bản ghi hợp lệ)")
+                print(f"[WARNING] Dữ liệu số chỗ không khả dụng (bỏ qua lọc chỗ ngồi)")
         
         return self.df
     
     def engineer_features(self):
-        """Create new features from existing ones"""
+        """
+        BƯỚC 6: Tạo các đặc trưng mới (Feature Engineering)
+        
+        Mục tiêu: Tạo ra các cột dữ liệu thông minh hơn từ dữ liệu thô để tăng độ chính xác của model.
+        """
         if self.df is None:
             raise ValueError("Data not loaded. Call load_data() first.")
         
         print("\n[FEATURE] Đang tạo các feature mới từ dữ liệu hiện tại...")
         
-        # Age of car
+        # 1. Tuổi xe (Age): Càng cũ giá thường càng giảm
         self.df['Age'] = config.CURRENT_YEAR - self.df['Year']
-        print(f"[INFO] Đã tạo feature Age (Tuổi xe)")
+        print(f"[INFO] Đã tạo feature Age (Tuổi xe = {config.CURRENT_YEAR} - Năm SX)")
         
-        # Giá trên mỗi năm (chỉ số khấu hao)
-        self.df['Price_Per_Year'] = self.df['Price_Million'] / (self.df['Age'] + 1)  # +1 để tránh chia 0
-        print(f"[INFO] Đã tạo feature Price_Per_Year (Giá trên mỗi năm)")
+        # 2. Giá trung bình mỗi năm: Để phân tích xem xe có giữ giá hay không
+        self.df['Price_Per_Year'] = self.df['Price_Million'] / (self.df['Age'] + 1)  # +1 để tránh chia 0 cho xe đời mới nhất
+        print(f"[INFO] Đã tạo feature Price_Per_Year (Chỉ số khấu hao)")
         
-        # KM âm để có tương quan ĐÚNG
-        # KM cao → Giá trị âm hơn → Giá thấp hơn
-        # KM thấp → Giá trị ít âm → Giá cao hơn
+        # 3. KM_Negative: ĐẢO DẤU SỐ KM
+        # Lý do: Trong Machine Learning, ta muốn KM tăng -> giá giảm. 
+        # Nhưng máy thường học KM tăng -> giá tăng. 
+        # Bằng cách đảo thành số âm: KM càng nhiều (vd: -200.000) thì giá trị càng NHỎ 
+        # -> Model học đúng quy luật hơn.
         self.df['KM_Negative'] = -self.df['Kilometers']
-        print(f"[INFO] Đã tạo feature KM_Negative (đảo dấu để khấu hao đúng)")
+        print(f"[INFO] Đã tạo feature KM_Negative (mẹo quan trọng nhất để tăng xác suất học đúng)")
         
         return self.df
     
@@ -371,26 +385,34 @@ class CarPriceDataLoader:
         return self.df
     
     def encode_categorical_features(self):
-        """Encode categorical features to numeric values"""
+        """
+        BƯỚC 8: Mã hóa dữ liệu dạng chữ thành số (Label Encoding)
+        
+        Mục tiêu: Các thuật toán Machine Learning chỉ hiểu số. 
+        Ta cần biến "Toyota" -> 45, "Vios" -> 123.
+        """
         if self.df is None:
             raise ValueError("Data not loaded. Call load_data() first.")
         
-        print("\n[ENCODE] Đang mã hóa các thuộc tính phi số thành số...")
+        print("\n[ENCODE] Đang mã hóa hãng/dòng xe thành các con số...")
         
-        # Only encode brand, model, fuel, transmission (skip Condition - has duplicates)
+        # Các cột cần mã hóa: Hãng, Dòng, Nhiên liệu, Hộp số
         categorical_columns = ['Brand', 'Model', 'Fuel', 'Transmission']
         
         for col in categorical_columns:
             if col in self.df.columns:
-                # Fill missing values with 'Unknown'
+                # Nếu dữ liệu trống, thay bằng chữ 'Unknown'
                 self.df[col] = self.df[col].fillna('Unknown')
                 
+                # Khởi tạo bộ mã hóa
                 le = LabelEncoder()
-                # Access single column explicitly to avoid shape issues
+                # Chuyển đổi dữ liệu sang dạng chuỗi trước khi đánh mã số
                 col_data = self.df[[col]].iloc[:, 0].astype(str)
+                # Lưu mã số vào cột mới ví dụ: 'Brand_Encoded'
                 self.df[f'{col}_Encoded'] = le.fit_transform(col_data)
+                # Lưu lại bộ mã hóa le để sau này dùng 'dịch ngược' (Decode)
                 self.label_encoders[col] = le
-                print(f"[INFO] Đã mã hóa {col}: {len(le.classes_)} giá trị riêng biệt")
+                print(f"[INFO] Mã hóa {col}: Đã ánh xạ {len(le.classes_)} nhóm khác nhau thành số")
         
         return self.df
     
@@ -446,38 +468,42 @@ class CarPriceDataLoader:
         return X, y, feature_columns
     
     def get_full_pipeline(self):
-        """Execute full data loading and preprocessing pipeline"""
-        print("[START] Bắt đầu pipeline tiền xử lý dữ liệu xe...\n")
+        """
+        THỰC THI TOÀN BỘ PIPELINE: 
+        Chạy lần lượt tất cả 9 bước từ đọc dữ liệu đến chuẩn bị sẵn sàng cho Model.
+        """
+        print("[START] Bắt đầu quy trình tiền xử lý dữ liệu xe từ A-Z...\n")
         
-        # Step 1: Load data
+        # Bước 1: Đọc file
         self.load_data()
         
-        # Step 2: Clean column names
+        # Bước 2: Tên cột (Việt -> Anh)
         self.clean_column_names()
         
-        # Step 3: Extract brand and model
+        # Bước 3: Tách Hãng & Dòng xe
         self.extract_brand_model()
         
-        # Step 4: Clean price
+        # Bước 4: Chuyển giá về triệu đồng
         self.clean_price()
         
-        # Step 5: Clean numeric features
+        # Bước 5: Làm sạch số (Năm, KM, Chỗ)
         self.clean_numeric_features()
         
-        # Step 6: Engineer features
+        # Bước 6: Tạo đặc trưng thông minh (Age, Neg_KM)
         self.engineer_features()
         
-        # Step 7: Clean data (outliers, missing)
+        # Bước 7: Loại bỏ dữ liệu ảo/sai (Outliers/Missing)
         self.clean_data()
         
-        # Step 8: Encode categorical
+        # Bước 8: Đánh mã số cho Hãng/Dòng
         self.encode_categorical_features()
         
-        # Step 9: Prepare features
+        # Bước 9: Trích xuất X (đầu vào) và y (đầu ra)
         X, y, feature_names = self.prepare_features()
         
-        print("\n[SUCCESS] Tiền xử lý dữ liệu hoàn tất!")
-        print(f"[INFO] Sẵn sàng train: {X.shape[0]:,} samples, {X.shape[1]} features")
+        print("\n[SUCCESS] Chúc mừng! Dữ liệu đã sạch và sẵn sàng để huấn luyện!")
+        print(f"[THỐNG KÊ] Số mẫu học: {X.shape[0]:,} xe")
+        print(f"[THỐNG KÊ] Số đặc trưng: {X.shape[1]} (Year, Age, KM_Neg, Brand_Enc, Model_Enc)")
         
         return X, y, feature_names, self.df
 
