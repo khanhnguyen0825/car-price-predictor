@@ -40,7 +40,7 @@ st.markdown("""
     .sub-header {
         font-size: 1.2rem;
         text-align: center;
-        color: #C5C6C7;
+        color: #4F4F4F;
         margin-bottom: 2rem;
     }
     .prediction-box {
@@ -49,6 +49,7 @@ st.markdown("""
         border-radius: 15px;
         text-align: center;
         margin: 1rem 0;
+        box-shadow: 0 4px 15px rgba(255, 107, 53, 0.2);
     }
     .prediction-price {
         font-size: 3.5rem;
@@ -62,10 +63,11 @@ st.markdown("""
         opacity: 0.9;
     }
     .metric-card {
-        background-color: #1F2833;
+        background-color: white;
         padding: 1.5rem;
         border-radius: 10px;
         border-left: 5px solid #FF6B35;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 </style>
 """, unsafe_allow_html=True)

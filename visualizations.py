@@ -61,7 +61,8 @@ def create_price_vs_year_scatter(df, predicted_year=None, predicted_price=None):
     
     fig.update_layout(
         height=500,
-        hovermode='closest'
+        hovermode='closest',
+        template='plotly_white'
     )
     
     return fig
@@ -95,7 +96,8 @@ def create_brand_comparison_box(df, top_n=10):
     fig.update_layout(
         height=500,
         showlegend=False,       # Ẩn legend vì màu = hãng xe đã rõ
-        xaxis_tickangle=-45     # Nghiêng nhãn trục X để dễ đọc
+        xaxis_tickangle=-45,     # Nghiêng nhãn trục X để dễ đọc
+        template='plotly_white'
     )
 
     return fig
@@ -124,7 +126,8 @@ def create_model_comparison_chart(comparison_df):
         xaxis_title='Model',
         yaxis_title='R² Score',
         height=400,
-        showlegend=True
+        showlegend=True,
+        template='plotly_white'
     )
 
     return fig
@@ -171,7 +174,8 @@ def create_feature_importance_chart(importance_dict, top_n=6):
         title='Tầm Quan Trọng Của Features',
         xaxis_title='Tầm Quan Trọng (%)',
         yaxis_title='Features',
-        height=400
+        height=400,
+        template='plotly_white'
     )
 
     return fig
@@ -219,7 +223,8 @@ def create_residual_plot(y_true, y_pred):
         title='Residual Plot - Phân Tích Sai Số',
         xaxis_title='Giá Dự Đoán (triệu VNĐ)',
         yaxis_title='Residual (Thực Tế - Dự Đoán)',
-        height=500
+        height=500,
+        template='plotly_white'
     )
 
     return fig
@@ -255,7 +260,7 @@ def create_price_distribution(df, predicted_price=None):
             annotation_position='top'
         )
 
-    fig.update_layout(height=400)
+    fig.update_layout(height=400, template='plotly_white')
     return fig
 
 
@@ -297,7 +302,8 @@ def create_actual_vs_predicted_scatter(y_true, y_pred):
         xaxis_title='Giá Thực Tế (triệu VNĐ)',
         yaxis_title='Giá Dự Đoán (triệu VNĐ)',
         height=500,
-        showlegend=True
+        showlegend=True,
+        template='plotly_white'
     )
     return fig
 
@@ -335,7 +341,7 @@ def create_metrics_gauge(r2_score, title="R\u00b2 Score"):
         }
     ))
 
-    fig.update_layout(height=300)
+    fig.update_layout(height=300, template='plotly_white')
     return fig
 
 
@@ -375,7 +381,7 @@ def create_km_vs_price_scatter(df, predicted_km=None, predicted_price=None):
             name='Dự Đoán Của Bạn'
         ))
 
-    fig.update_layout(height=500, hovermode='closest')
+    fig.update_layout(height=500, hovermode='closest', template='plotly_white')
     return fig
 
 
@@ -414,7 +420,8 @@ def create_top_models_chart(df, top_n=10):
         xaxis_title='Dòng Xe',
         yaxis_title='Giá Trung Bình (triệu VNĐ)',
         height=500,
-        xaxis_tickangle=-45
+        xaxis_tickangle=-45,
+        template='plotly_white'
     )
     return fig
 
@@ -466,7 +473,8 @@ def create_price_trend_by_year(df):
         yaxis_title='Giá (triệu VNĐ)',
         height=450,
         hovermode='x unified',  # Hover hiển thị cả 2 đường cùng lúc
-        showlegend=True
+        showlegend=True,
+        template='plotly_white'
     )
     return fig
 
@@ -493,7 +501,7 @@ def create_age_depreciation_chart(df):
         hover_data=['Name']
     )
 
-    fig.update_layout(height=500, hovermode='closest')
+    fig.update_layout(height=500, hovermode='closest', template='plotly_white')
     return fig
 
 
@@ -547,7 +555,8 @@ def create_error_distribution_chart(y_true, y_pred):
         xaxis_title='Sai số (triệu VNĐ)',
         yaxis_title='Tần suất',
         showlegend=True,
-        height=400
+        height=400,
+        template='plotly_white'
     )
     
     return fig
@@ -588,7 +597,8 @@ def create_model_comparison_bar_chart(comparison_df):
         barmode='group',
         height=450,
         showlegend=True,
-        hovermode='x unified'
+        hovermode='x unified',
+        template='plotly_white'
     )
     
     return fig
@@ -626,7 +636,8 @@ def create_correlation_heatmap(df, features):
         title='Ma Trận Tương Quan Giữa Các Features',
         height=500,
         xaxis={'side': 'bottom'},
-        yaxis={'side': 'left'}
+        yaxis={'side': 'left'},
+        template='plotly_white'
     )
     return fig
 
@@ -684,7 +695,8 @@ def create_prediction_intervals_chart(y_true, y_pred, sample_size=100):
         yaxis_title='Giá (triệu VNĐ)',
         height=450,
         hovermode='x unified',
-        showlegend=True
+        showlegend=True,
+        template='plotly_white'
     )
     return fig
 
