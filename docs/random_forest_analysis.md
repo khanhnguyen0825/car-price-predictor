@@ -2,7 +2,7 @@
 
 ## 🎯 Tổng Quan
 
-Random Forest đạt **R² = 0.8618 (86.18%)** - cao nhất trong 6 models được test, vượt trội hơn Linear Regression, Ridge, Lasso, SVR và Gradient Boosting.
+Random Forest đạt **R² = 0.8654 (86.54%)** - cao nhất trong 6 models được test, vượt trội hơn Linear Regression, Ridge, Lasso, SVR và Gradient Boosting.
 
 ---
 
@@ -28,11 +28,11 @@ Dựa trên `data_loader.py`, dataset có những đặc điểm sau:
 #### A. **Non-linear Relationships phức tạp**
 ```python
 # Features trong project:
-- Model_Encoded (44.79% importance)  # 100+ dòng xe khác nhau
-- Brand_Encoded (24.26% importance)  # 15+ hãng xe
-- Age (10.84%)                       # Khấu hao phi tuyến
-- KM_Negative (10.46%)               # Ảnh hưởng phi tuyến
-- Year (9.64%)                       # Tương tác với Brand/Model
+- Model_Encoded (40.68% importance)  # 100+ dòng xe khác nhau
+- Brand_Encoded (29.11% importance)  # 15+ hãng xe
+- KM_Negative (14.41%)               # Ảnh hưởng phi tuyến
+- Year (7.91%)                       # Tương tác với Brand/Model
+- Age (7.89%)                        # Khấu hao phi tuyến
 ```
 
 **Vấn đề:**
@@ -67,7 +67,7 @@ self.df['Model'] = self.df['Name'].apply(extract_model)
 **Tại sao RF tốt:**
 - ✅ RF không quan tâm đến thứ tự số: chỉ split theo điều kiện `if Model == 42`
 - ✅ Mỗi cây học được "pattern" riêng cho từng Model/Brand
-- ✅ Feature importance cho biết Model quan trọng hơn Brand (44.79% vs 24.26%)
+- ✅ Feature importance cho biết Model quan trọng nhất, theo sau là Brand (40.68% vs 29.11%)
 - ❌ Linear models bị nhiễu bởi Label Encoding số học
 
 ---
@@ -182,11 +182,11 @@ X_scaled = scaler.fit_transform(X)  # Extra step!
 
 ```python
 # Random Forest cung cấp feature importance:
-Model_Encoded:   44.79%  # Dòng xe quan trọng nhất!
-Brand_Encoded:   24.26%  # Hãng xe quan trọng thứ 2
-Age:             10.84%  # Tuổi xe
-KM_Negative:     10.46%  # Số KM đã đi
-Year:             9.64%  # Năm sản xuất
+Model_Encoded:   40.68%  # Dòng xe quan trọng nhất!
+Brand_Encoded:   29.11%  # Hãng xe quan trọng thứ 2
+KM_Negative:     14.41%  # Số KM đã đi
+Year:             7.91%  # Năm sản xuất
+Age:              7.89%  # Tuổi xe
 ```
 
 **Giá trị business:**
@@ -211,9 +211,9 @@ Year:             9.64%  # Năm sản xuất
 
 **Kết quả:**
 ```
-R² Train: 0.95  (95%)
-R² Test:  0.86  (86%)
-Gap:      9%     → Overfitting vẫn có nhưng CHẤP NHẬN ĐƯỢC
+R² Train: 0.9525 (95.25%)
+R² Test:  0.8654 (86.54%)
+Gap:      8.71%  → Overfitting vẫn có nhưng CHẤP NHẬN ĐƯỢC
 ```
 
 **So sánh:**
@@ -232,10 +232,10 @@ Gap:      9%     → Overfitting vẫn có nhưng CHẤP NHẬN ĐƯỢC
 5. ✅ Không cần scaling (deployment đơn giản)
 
 ### **Performance Numbers**
-- **Random Forest:** R² = 86.18%, MAE = ~100 triệu VNĐ
-- **Gradient Boosting:** R² = 84% (kém hơn + overfit nhiều hơn)
-- **Linear/Ridge/Lasso:** R² = 75-78% (underfit nghiêm trọng)
-- **SVR:** R² = 80% (cần scaling + chậm)
+- **Random Forest:** R² = 86.54%, MAE = 112.9 triệu VNĐ
+- **Gradient Boosting:** R² = 71.70% (kém hơn + overfit nhiều hơn)
+- **Linear/Ridge/Lasso:** R² = 10.65% (underfit nghiêm trọng)
+- **SVR:** R² = -4.61% (cần scaling + chậm)
 
 ### **Trade-offs**
 - ✅ **Ưu điểm:** Accuracy cao, robust, không cần tuning nhiều

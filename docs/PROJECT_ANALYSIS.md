@@ -21,9 +21,9 @@ Dự án **Car Price Predictor** sử dụng Machine Learning để dự đoán 
 ### 1.3 Dataset
 - **Source**: Kaggle - Vietnam Car Prices
 - **Raw records**: 15,442 listings
-- **After cleaning**: 8,685 xe (có data KM hợp lệ)
+- **After cleaning**: 9,154 xe (có data KM hợp lệ)
 - **Features**: Brand, Model, Year, Kilometers, Age
-- **Price range**: 29M - 2,130M VNĐ
+- **Price range**: 29M - 3,139M VNĐ
 - **Top brands**: Toyota, Mercedes, Hyundai, Kia, Ford
 
 ---
@@ -83,14 +83,14 @@ car-price-predictor/
 
 | Model | R² (Test) | MAE | RMSE | Verdict |
 |-------|-----------|-----|------|---------|
-| **Random Forest** ⭐ | **86.18%** | **87M VNĐ** | **160M VNĐ** | 🏆 **BEST** |
-| Gradient Boosting | 73.72% | 149M VNĐ | 221M VNĐ | Good |
-| Ridge Regression | 19.67% | 288M VNĐ | 386M VNĐ | Poor (underfit) |
-| Linear Regression | 19.67% | 288M VNĐ | 386M VNĐ | Poor (underfit) |
-| Lasso Regression | 19.65% | 288M VNĐ | 386M VNĐ | Poor (underfit) |
-| SVR | 5.18% | 291M VNĐ | N/A | Very poor (needs scaling) |
+| **Random Forest** ⭐ | **86.54%** | **112.9M VNĐ** | **229.4M VNĐ** | 🏆 **BEST** |
+| Gradient Boosting | 71.70% | 203.7M VNĐ | 332.7M VNĐ | Good |
+| Lasso Regression | 10.65% | 403.5M VNĐ | 591.1M VNĐ | Poor (underfit) |
+| Ridge Regression | 10.65% | 403.5M VNĐ | 591.1M VNĐ | Poor (underfit) |
+| Linear Regression | 10.65% | 403.5M VNĐ | 591.1M VNĐ | Poor (underfit) |
+| SVR | -4.61% | 397.1M VNĐ | 639.6M VNĐ | Very poor (needs scaling) |
 
-**Kết luận**: Random Forest vượt trội với **86% accuracy**, cao hơn model thứ 2 (Gradient Boosting) tới **12.5%**!
+**Kết luận**: Random Forest vượt trội với **86.54% accuracy**, cao hơn model thứ 2 (Gradient Boosting) tới **14.8%**!
 
 ---
 
@@ -100,13 +100,13 @@ car-price-predictor/
 
 | Feature | Type | Importance | Giải thích |
 |---------|------|------------|-----------|
-| `Model_Encoded` | Categorical → Numeric | **44.79%** | Dòng xe (Vios, Civic, CX-5...) - QUAN TRỌNG NHẤT |
-| `Brand_Encoded` | Categorical → Numeric | **24.26%** | Hãng xe (Toyota, Honda, Mercedes...) |
-| `Age` | Engineered | **10.84%** | Tuổi xe = Current_Year - Year |
-| `KM_Negative` | **Engineered** | **10.46%** | = -Kilometers (để đảm bảo correlation đúng) |
-| `Year` | Numeric | **9.64%** | Năm sản xuất (2000-2024) |
+| `Model_Encoded` | Categorical → Numeric | **40.68%** | Dòng xe (Vios, Civic, CX-5...) - QUAN TRỌNG NHẤT |
+| `Brand_Encoded` | Categorical → Numeric | **29.11%** | Hãng xe (Toyota, Honda, Mercedes...) |
+| `KM_Negative` | **Engineered** | **14.41%** | = -Kilometers (để đảm bảo correlation đúng) |
+| `Year` | Numeric | **7.91%** | Năm sản xuất (2000-2024) |
+| `Age` | Engineered | **7.89%** | Tuổi xe = Current_Year - Year |
 
-**Total**: Brand + Model = 69% importance → Đây là 2 yếu tố quyết định giá nhất!
+**Total**: Brand + Model = 69.8% importance → Đây là 2 yếu tố quyết định giá nhất!
 
 ### 4.2 Critical Engineering: KM_Negative
 
@@ -231,7 +231,7 @@ plotly:          6.5.2      ✅
 4. ✅ **Feature engineering smart**: KM_Negative fix depreciation logic
 5. ✅ **Production-ready**: Pre-trained model load nhanh (1 giây)
 6. ✅ **UI/UX đẹp**: 5 tabs, 16 charts interactive
-7. ✅ **Performance tốt**: R² = 86%, MAE = 87M VNĐ (~12% error)
+7. ✅ **Performance tốt**: R² = 86.54%, MAE = 112.9M VNĐ (~14% error)
 
 ### 8.2 Có Thể Cải Thiện
 
@@ -267,8 +267,8 @@ plotly:          6.5.2      ✅
 |--------|--------|-------|
 | **Code** | ✅ Clean | No errors, well-structured |
 | **Dependencies** | ✅ Installed | All required packages present |
-| **Dataset** | ✅ Available | 8,685 xe valid data |
-| **Model** | ✅ Trained | Best: Random Forest R²=86% |
+| **Dataset** | ✅ Available | 9,154 xe valid data |
+| **Model** | ✅ Trained | Best: Random Forest R²=86.54% |
 | **Documentation** | ✅ Excellent | 5 files, comprehensive |
 | **App** | ✅ Ready | Can run with `streamlit run app.py` |
 
