@@ -1,135 +1,54 @@
-# Hướng Dẫn Cài Đặt Car Price Predictor
+# 🛠️ Hướng Dẫn Cài Đặt Hệ Thống
 
-## 📋 Yêu Cầu Hệ Thống
-
-- **Python**: 3.8 trở lên
-- **RAM**: Tối thiểu 4GB
-- **Dung lượng**: ~100MB cho project + dependencies
+Tài liệu này hướng dẫn bạn cách thiết lập môi trường và vận hành dự án **Car Price Predictor** từ lúc tải code cho đến khi chạy Web thành công.
 
 ---
 
-## 🚀 Cài Đặt Nhanh (3 Bước)
+## 📋 1. Yêu Cầu Hệ Thống
+- **Hệ điều hành**: Windows 10/11, macOS hoặc Linux.
+- **Python**: Phiên bản **3.9** trở lên (Khuyến nghị dùng 3.12+).
+- **Phần mềm hỗ trợ**: VS Code, PyCharm hoặc bất kỳ trình soạn thảo mã nguồn nào.
 
-### **Bước 1: Tải Source Code**
+---
 
-**Option A - Clone từ Git:**
-```bash
-git clone <repository-url>
-cd car-price-predictor
-```
+## 🚀 2. Quy Trình Cài Đặt (3 Bước)
 
-**Option B - Tải ZIP:**
-- Tải file ZIP từ repository
-- Giải nén vào thư mục mong muốn
-- Mở terminal/cmd tại thư mục đó
-
-### **Bước 2: Cài Dependencies**
+### **Bước 1: Tải mã nguồn & Môi trường**
+Mở Terminal hoặc Command Prompt tại thư mục dự án và cài đặt các thư viện cần thiết:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**Dependencies chính:**
-- `streamlit` - Web framework
-- `pandas`, `numpy` - Data processing
-- `scikit-learn` - Machine learning
-- `plotly` - Interactive charts
-- `scipy` - Statistical functions
+*Các thư viện chính sẽ được cài bao gồm: Streamlit, Scikit-learn, Pandas, Plotly.*
 
-### **Bước 3: Train Model**
+### **Bước 2: Huấn luyện bộ não AI (Training)**
+Dự án được thiết kế để tách biệt phần huấn luyện. Bạn cần chạy lệnh này để máy quét qua tập dữ liệu 15,000 xe và tạo ra file mô hình:
 
 ```bash
 python train_model.py
 ```
 
-Quá trình này mất ~1-2 phút, chỉ chạy **1 lần duy nhất** hoặc khi muốn retrain.
+*Kết quả: File `models/best_model.pkl` sẽ được tạo ra. Nếu file này đã có sẵn, bạn có thể bỏ qua bước này.*
 
----
-
-## 🎯 Chạy Ứng Dụng
+### **Bước 3: Khởi chạy Giao diện Web**
+Sử dụng lệnh Streamlit để bật ứng dụng lên trình duyệt:
 
 ```bash
 python -m streamlit run app.py
 ```
 
-App sẽ mở tại: **http://localhost:8501**
+*Sau khi chạy, ứng dụng sẽ mở tại địa chỉ: **http://localhost:8501***
 
 ---
 
-## 📂 Cấu Trúc Project
+## 📂 3. Cấu Trúc Thư Mục Quan Trọng
 
-```
-car-price-predictor/
-├── data/
-│   └── data.csv              # Dataset xe
-├── models/
-│   └── best_model.pkl        # Pre-trained model (tự động tạo)
-├── docs/                     # Documentation
-├── app.py                    # Streamlit web app
-├── model.py                  # ML models
-├── data_loader.py            # Data preprocessing
-├── visualizations.py         # Plotly charts
-├── train_model.py            # Training script
-├── config.py                 # Configurations
-└── requirements.txt          # Dependencies
-```
+- `app.py`: Trung tâm điều khiển giao diện người dùng.
+- `data_loader.py`: Nơi chứa toàn bộ logic làm sạch dữ liệu (như IQR, Regex).
+- `model.py`: Chứa các thuật toán AI và logic huấn luyện.
+- `visualizations.py`: Nơi định nghĩa các biểu đồ Plotly.
+- `data/data.csv`: "Thức ăn" cho AI - Tập dữ liệu gốc.
+- `models/best_model.pkl`: "Bộ não" AI sau khi đã học xong.
 
 ---
-
-## 🔧 Troubleshooting
-
-### **Lỗi: Module not found**
-```bash
-pip install -r requirements.txt
-```
-
-### **Lỗi: File không tồn tại**
-Đảm bảo file `data/data.csv` có trong project.
-
-### **App chạy chậm**
-Chạy `python train_model.py` trước để tạo pre-trained model.
-
-### **Clear cache Streamlit**
-```bash
-python -m streamlit cache clear
-```
-
----
-
-## 📝 Workflow Thông Thường
-
-**Lần đầu setup:**
-```bash
-pip install -r requirements.txt
-python train_model.py
-python -m streamlit run app.py
-```
-
-**Các lần sau:**
-```bash
-python -m streamlit run app.py
-```
-
-**Khi có data mới:**
-```bash
-python train_model.py          # Retrain model
-python -m streamlit run app.py # Chạy app
-```
-
----
-
-## 💡 Tips
-
-- **Model file**: `models/best_model.pkl` được tạo sau khi train, giúp app load nhanh
-- **Port bận**: Đổi port với flag `--server.port 8502`
-- **Auto-reload**: Streamlit tự reload khi sửa code
-- **Data mới**: Thay file `data/data.csv` rồi chạy `train_model.py`
-
----
-
-## 📞 Support
-
-Nếu gặp vấn đề, check:
-1. Python version: `python --version`
-2. Pip version: `pip --version`
-3. Dependencies: `pip list`
