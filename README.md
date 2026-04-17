@@ -1,33 +1,63 @@
-# 🚗 Car Price Predictor - Vietnam Market
+# Vietnam Car Price Predictor
 
-Hệ thống dự báo giá xe ô tô cũ tại Việt Nam dựa trên Machine Learning.
+Hệ thống định giá ô tô cũ tại thị trường Việt Nam sử dụng Machine Learning (Random Forest). Dự án đạt độ chính xác **R² = 86.54%** và được triển khai dưới dạng Web Application (Streamlit).
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_svg.svg)](http://localhost:8501)
-[![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/)
 
----
+## Tính năng nổi bật
 
-## 📖 Giới thiệu dự án
-Dự án sử dụng mô hình **Random Forest** để phân tích dữ liệu từ hơn 9,000 giao dịch xe thực tế, giúp người dùng định giá nhanh một chiếc xe dựa trên Hãng, Dòng, Năm sản xuất và Số KM đã đi.
+- **Độ chính xác cao**: Chỉ số R² đạt 86.54%, MAE (Sai số trung bình) ~112 triệu VNĐ.
+- **Xử lý dữ liệu thông minh**: Kỹ thuật `KM_Negative` giúp mô hình hiểu đúng quy luật hao mòn: Đi càng nhiều - Giá càng giảm.
+- **Tương tác thời gian thực**: Dự báo ngay lập tức sau khi nhập thông số xe.
+- **Thư viện AI mạnh mẽ**: So sánh 6 thuật toán và tự động chọn Random Forest là mô hình tối ưu nhất.
+- **Hỗ trợ tiếng Việt**: Xử lý triệt để lỗi font tiếng Việt trong tên xe và định dạng tiền tệ "Tỷ", "Triệu".
 
-- **Độ chính xác (R²):** 86.54%
-- **Sai số MAE:** ~113 Triệu VNĐ
-- **Công nghệ:** Python, Scikit-learn, Streamlit, Plotly.
+## Hiệu suất mô hình
 
-## 🚀 Hướng dẫn nhanh
-1. **Cài đặt:** `pip install -r requirements.txt`
-2. **Train AI:** `python train_model.py`
-3. **Chạy Web:** `python -m streamlit run app.py`
+| Thuật toán | R² (Test) | MAE | Verdict |
+| :--- | :--- | :--- | :--- |
+| **Random Forest** ⭐ | **86.54%** | **112.9M VNĐ** | 🏆 **BEST** |
+| Gradient Boosting | 71.70% | 203.7M VNĐ | Good |
+| Lasso Regression | 10.65% | 403.5M VNĐ | Poor (Underfit) |
+| SVR (RBF Kernel) | -4.61% | 397.1M VNĐ | Fail (Needs Scaling) |
 
-## 📚 Tài liệu chi tiết
-Để phục vụ cho buổi thuyết trình và báo cáo, vui lòng xem các tài liệu chuyên sâu trong thư mục `docs/`:
+### Tầm quan trọng của các yếu tố (Feature Importance)
+1. **Dòng Xe (Model)**: 40.68% (Yếu tố quan trọng nhất)
+2. **Hãng Xe (Brand)**: 29.11%
+3. **Số KM (Kilometers)**: 14.41%
+4. **Năm SX (Year)**: 7.91%
+5. **Tuổi Xe (Age)**: 7.89%
 
-1.  **[Hướng dẫn Cài đặt](docs/INSTALLATION.md)**: Chi tiết cách setup.
-2.  **[Slide Format & Kịch bản](docs/SLIDE_FORMAT_GUIDE.md)**: Gợi ý nội dung slide.
-3.  **[Q&A - Câu hỏi Phản biện](docs/Q&A_PRESENTATION.md)**: 10 câu hỏi giảng viên thường hỏi.
-4.  **[Chi tiết Thuật toán](docs/ALGORITHM_DETAILS.md)**: So sánh 6 mô hình AI.
-5.  **[Phân tích luồng dự án](docs/PROJECT_FLOW.md)**: Kiến trúc hệ thống.
+## Cài đặt & Chạy ứng dụng
 
----
-*Built for educational purposes and market analysis.*
-**Lead Developer:** [Your Name]
+### 1. Cài đặt thư viện
+```bash
+pip install -r requirements.txt
+```
+
+### 2. Huấn luyện mô hình (Chỉ chạy 1 lần đầu)
+```bash
+python train_model.py
+```
+
+### 3. Khởi chạy Web App
+```bash
+python -m streamlit run app.py
+```
+
+## Cấu trúc dự án
+
+```
+car-price-predictor/
+├── app.py                  # Giao diện Web (Streamlit)
+├── model.py                # Định nghĩa các mô hình AI
+├── data_loader.py          # Tiền xử lý dữ liệu & Feature Engineering
+├── visualizations.py       # Module vẽ 16 biểu đồ Plotly
+├── data/
+│   └── data.csv           # Tập dữ liệu 15,000+ xe
+├── docs/                   # Tài liệu hướng dẫn & Phân tích
+│   ├── Q&A_PRESENTATION.md # 10 câu hỏi phản biện
+│   ├── INSTALLATION.md     # Hướng dẫn cài đặt chi tiết
+│   └── ALGORITHM_DETAILS.md # Chi tiết 6 thuật toán
+└── models/
+    └── best_model.pkl      # Bộ não AI đã được huấn luyện
+```
